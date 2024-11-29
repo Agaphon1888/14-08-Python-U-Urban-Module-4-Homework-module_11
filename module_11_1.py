@@ -17,22 +17,25 @@ except requests.RequestException as e:
     print(f'Ошибка при запросе данных: {e}')
     exit()
 
+# Создаем объект BeautifulSoup для парсинга HTML-кода
 soup = BeautifulSoup(response.content, 'html.parser')
 
+# Находим таблицу по ее классу
 table = soup.find('table', {'class': 'table'})
 
-platforms = []
-users = []
+platforms = []  # Список для хранения названий платформ
+users = []  # Список для хранения количества пользователей
 
-for row in table.find_all('tr')[1:]:  # Skip the header row
-    columns = row.find_all('td')
+# Проходим по каждой строке таблицы, начиная со второй (пропуская заголовок)
+for row in table.find_all('tr')[1:]:
+    columns = row.find_all('td')  # Находим все ячейки (`<td>`) в строке
 
-    # Ensure we have both platform name and user count
+    # Проверяем, что в строке есть как минимум две ячейки (название платформы и количество пользователей)
     if len(columns) >= 2:
-        platform = columns[0].text.strip()
-        user_text = columns[1].text.strip()
+        platform = columns[0].text.strip()  # Извлекаем название платформы и удаляем лишние пробелы
+        user_text = columns[1].text.strip()  # Извлекаем текст с количеством пользователей и удаляем лишние пробелы
 
-        # Remove commas and convert to float
+        # Удаляем запятые из строки с количеством пользователей и преобразуем ее в число с плавающей точкой
         user_count = float(user_text.replace(',', ''))
 
         platforms.append(platform)
